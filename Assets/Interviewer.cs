@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Microsoft.Unity.VisualStudio.Editor;
 using Unity.XR.Oculus;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class Interviewer : MonoBehaviour
 {
@@ -14,10 +16,8 @@ public class Interviewer : MonoBehaviour
     public Material source_mat;
 
     public CanvasRenderer mouth;
+    public CanvasRenderer eyes;
 
-    public Sprite smile;
-    public Sprite mouth_img;
-    private Sprite current;
     public Sprite blink;
     public Sprite normal;
     public Sprite happy;
@@ -36,7 +36,7 @@ public class Interviewer : MonoBehaviour
         left_hand.GetComponent<MeshRenderer>().material = skin_color;
         right_hand.GetComponent<MeshRenderer>().material = skin_color;
 
-        current = smile;
+        currentEye = normal;
     }
 
     float eyetime = 0;
@@ -54,6 +54,7 @@ public class Interviewer : MonoBehaviour
     }
 
     private bool blinking = false;
+    private Sprite currentEye;
 
     private void Blink()
     {
@@ -61,11 +62,14 @@ public class Interviewer : MonoBehaviour
 
         if (blinking)
         {
-
+            eyes.GetComponent<UnityEngine.UI.Image>().sprite = blink;
+            next_blink = 0.2f;
             return;
         }
+        eyes.GetComponent<UnityEngine.UI.Image>().sprite = currentEye;
+        next_blink = Random.value * 7 + 0.5f;
     }
-
+/*
     private void SwapFace()
     {
         if (current == smile)
@@ -78,5 +82,5 @@ public class Interviewer : MonoBehaviour
             current = smile;
             mouth.GetComponent<UnityEngine.UI.Image>().sprite = smile;
         }
-    }
+    }*/
 }
