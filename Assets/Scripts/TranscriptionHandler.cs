@@ -21,7 +21,7 @@ namespace Meta.WitAi.Dictation
         private WitTranscriptionEvent onTranscriptionUpdated = new
             WitTranscriptionEvent();
 
-        private StringBuilder _text;
+        private static StringBuilder _text;
         private string _activeText;
         private bool _newSection;
 
@@ -111,6 +111,7 @@ namespace Meta.WitAi.Dictation
                 }
             }
             onTranscriptionUpdated.Invoke(transcription.ToString());
+            
         }
     }
 }

@@ -9,7 +9,7 @@ namespace OpenAI
     {
         public static String GetAIKey()
         {
-            return "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";
+            return "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";
         }
     }
 }

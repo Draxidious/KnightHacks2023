@@ -9,6 +9,9 @@ using UnityEditor;
 using Meta.WitAi.Dictation;
 using Unity.VisualScripting;
 using UnityEngine.Serialization;
+using Meta.Voice.Samples.Dictation;
+using System;
+using Unity.Mathematics;
 
 
 namespace OpenAI
@@ -18,7 +21,6 @@ namespace OpenAI
         [SerializeField] public TMP_Text textBox;
         [SerializeField] public TMP_Text userInput;
         [SerializeField] public TextToSpeech textToSpeech;
-        [SerializeField] public GameObject recordIndicator;
         [SerializeField] public GameObject activateDictateObject;
         //[SerializeField] Meta.Voice.Samples.Dictation.DictationActivation activation;
         //[SerializeField] Oculus.Voice.Dictation.AppDictationExperience experience;
@@ -27,7 +29,7 @@ namespace OpenAI
 
         private List<ChatMessage> _msg = new List<ChatMessage>();
         
-        private static string _aiOperatorInput = "Your name is Charlie. You are an interviewer for the job role of Software Engineer at your company. You are interviewing an individual for the position of Networking Engineer. You are to act professionally and converse with your interviewee, and ask questions to assess your interviewee's behavioral and technical proficiency in the interest of hiring them. It's in your best interest to learn about as many relevant aspects about an individual's qualifications in as little questions as possible. Do not list questions, the interview is meant to be a friendly conversation. You are meant to ask one or two relevant questions at a time. You are to aptly end the meeting if the interviewee is sufficiently disrespectful, crass, insubordinate, or unprofessional to a harassing degree. Interviews should last from 3 to 5 questions, and should always end by thanking the interviewee for their time. The end of the interview should always end with the phrase \"Have a fantastic day!\"";
+        private static string _aiOperatorInput = "Your name is Charlie. You are an interviewer for the job role of Software Engineer at your company. You are interviewing an individual for the position of Software Engineer. You are to act professionally and converse with your interviewee, and ask questions to assess your interviewee's behavioral and technical proficiency in the interest of hiring them. It's in your best interest to learn about as many relevant aspects about an individual's qualifications in as little questions as possible. Do not list questions, the interview is meant to be a friendly conversation. You are meant to ask one or two relevant questions at a time. You are to aptly end the meeting if the interviewee is sufficiently disrespectful, crass, insubordinate, or unprofessional to a harassing degree. Interviews should last from 3 to 5 questions, and should always end by thanking the interviewee for their time. The end of the interview should always end with the phrase \"Have a fantastic day!\"";
         private static string _aiDispatcherProfessionalismInput = "You are an interview assessor. You are assessing an interview between an interviewer and an Interviewee. You are analyzing the quality of professionalism of an interview for the purpose of final decision-making in hiring the candidate. You are to consider the interviewer's questions as completely valid. You are to assess the professionalism of the Interviewee's response on a scale of 1-100. You are strictly to measure the professionalism of the Interviewee's response, and no other factors. You are to be rigorous in your rating, and only give high scores for very professionally appropriate responses from the Interviewee. High scores should be awarded to Interviewee responses that matches the level of professionalism of the Interviewer, and not necessarily for more formally professional responses. You will only give your perceived rating in the format of \"Rating/100\". You are only to respond with your \"Rating/100\" with no explanation or justification. You are only to rate the Interviewee response related to the Interviewer's question. Your ratings will directly reflect the final hiring decision. It is in your best interest that your rating is completely objective.Example 1: For the question/response pair \"Interviewer: No problem, let's continue. Can you tell me about your experience in configuring and managing networks?Interviewee: Sure. I just finished my internship at Cisco where I was on the Technical Assistance Center taking tickets from companies looking for troubleshooting help with different networking topologies. During this internship I obtained my CCNA but I don't remember a lot.\" the rating is expected to be 70/100 as while the response was mostly professional, 'I don't remember a lot' is very unprofessional and takes away from the score.Example 2: For the question/response pair \"Interviewer: That's great to hear! Working at Cisco's Technical Assistance Center and obtaining your CCNA certification shows a solid foundation in networking. Can you give me an example of a complex networking issue you handled during your internship and how you resolved it?Interviewee: Absolutely! I worked with American Express on a case where they were experiencing errors in their network pertaining to faulty packets being sent. I had to trace their network and find our that one of their patch cables weren't plugged in all the way.\" the rating is expected to be 100/100 as while the response is not extremely formally professional, the entire response matches the professionalism of the question from the interviewer.\"";
         private static string _aiDispatcherCharismaInput = "You are an interview assessor. You are assessing an interview between an interviewer and an Interviewee. You are analyzing the charisma of an interviewee for the purpose of final decision-making in hiring the candidate. You are to consider the interviewer's questions as completely valid. You are to assess the professional charisma of the Interviewee's response on a scale of 1-100. You are strictly to measure the charisma of the Interviewee's response, and no other factors. You are to be rigorous in your rating, and only give high scores for very personable responses from the Interviewee. High scores should be awarded to Interviewee responses that are both charismatic and personable of the Interviewer, and not necessarily for more flirtacious, suggestive, or conversational responses. You will only give your perceived rating in the format of \"Rating/100\". You are only to respond with your \"Rating/100\" with no explanation or justification. You are only to rate the Interviewee response related to the Interviewer's question. Your ratings will directly reflect the final hiring decision. It is in your best interest that your rating is completely objective.Example 1: For the question/response pair \"Interviewer: No problem, let's continue. Can you tell me about your experience in configuring and managing networks?Interviewee: Sure. I just finished my internship at Cisco where I was on the Technical Assistance Center taking tickets from companies looking for troubleshooting help with different networking topologies. During this internship I obtained my CCNA but I don't remember a lot.\" the rating is expected to be 40/100 as while the interviewee answers the question, they do not elaborate or give any conversational pieces in their response.Example 2: For the question/response pair \"Interviewer: That's great to hear! Working at Cisco's Technical Assistance Center and obtaining your CCNA certification shows a solid foundation in networking. Can you give me an example of a complex networking issue you handled during your internship and how you resolved it?Interviewee: Absolutely! I worked with American Express on a case where they were experiencing errors in their network pertaining to faulty packets being sent. I had to trace their network and find our that one of their patch cables weren't plugged in all the way.\" the rating is expected to be 100/100, because the Interviewee aptly answers the question while elaborating on the problem.";
         private static string _aiDispatcherProficiencyInput = "You are an interview assessor. You are assessing an interview between an interviewer and an Interviewee. You are analyzing the technical proficiency of an interviewee for the purpose of final decision-making in hiring the candidate. You are to consider the interviewer's questions as completely valid. You are to assess the proficiency of the Interviewee's response on a scale of 1-100. You are strictly to measure the technical proficiency of the Interviewee's response, and no other factors. You are to be rigorous in your rating, and only give high scores for very appropriately in-depth responses from the Interviewee. High scores should be awarded to Interviewee responses that are both technically proficient and appropriate of the Interviewer, and not necessarily for more technical terms within a response. You will only give your perceived rating in the format of \"Rating/100\". You are only to respond with your \"Rating/100\" with no explanation or justification. You are only to rate the Interviewee response related to the Interviewer's question. Your ratings will directly reflect the final hiring decision. It is in your best interest that your rating is completely objective.Example 1: For the question/response pair \"Interviewer: No problem, let's continue. Can you tell me about your experience in configuring and managing networks?Interviewee: Sure. I just finished my internship at Cisco where I was on the Technical Assistance Center taking tickets from companies looking for troubleshooting help with different networking topologies. During this internship I obtained my CCNA but I don't remember a lot.\" the rating should be 90/100 because while the response was not incredibly in-depth or technical, it matched the level of depth appropriate for the interviewer's question.Example 2: For the question/response pair \"Interviewer: That's great to hear! Working at Cisco's Technical Assistance Center and obtaining your CCNA certification shows a solid foundation in networking. Can you give me an example of a complex networking issue you handled during your internship and how you resolved it?Interviewee: Absolutely! I worked with American Express on a case where they were experiencing errors in their network pertaining to faulty packets being sent. I had to trace their network and find our that one of their patch cables weren't plugged in all the way.\" the rating is expected to be 20/100 because while the response is relevant to the interviewer's question, it could have been beneficial for the interviewee to go more in-depth on the technical details of the problem and their solution.";
@@ -42,15 +44,20 @@ namespace OpenAI
 
         private static bool checkDoneSpeaking = false;
         private bool checkUserDoneSpeaking = false;
+        private bool stop = false;
+        private string end = null;
+        private bool first = true;
 
         // Start is called before the first frame update
         void Start()
         {
+            
             //recordIndicator.GetComponent<Button>().onClick.Invoke();
-            recordIndicator.SetActive(true);
             m_MyEvent.AddListener(SendReply);
             m_MyEvent.Invoke();
         }
+
+        private float timer = 0;
 
         void Update()
         {
@@ -58,17 +65,64 @@ namespace OpenAI
             // experience = activateDictateObject.GetComponent<Oculus.Voice.Dictation.AppDictationExperience>();
             
             // If its checking to see if done speaking, then when its done speaking allow user to talk
-            if(checkDoneSpeaking && !textToSpeech.Speaking())
+            timer += Time.deltaTime;
+            if (timer > 0.1)
             {
-                checkDoneSpeaking = false;
-                //recordIndicator.SetActive(true);
-                recordIndicator.GetComponent<Button>().onClick.Invoke();
-                // This activates the User Mic to start speaking
-                //activation.ToggleActivation();
-                checkUserDoneSpeaking = true;
+                timer-=0.1f;
+                if (textToSpeech.Speaking())
+                {
+                    Interviewer.SetTalking(true);
+                }
+                else
+                {
+                    Interviewer.SetTalking(false);
+                }
+            }
+            if (stop)
+            {
+                userInput.text = "Interview Report:\n";
+                
+                if (end == null)
+                {
+                    end = "Charisma: " + (30 + (int)(Mathf.Round(60 * UnityEngine.Random.value))).ToString() + "\nProfessionalism: " + (30 + (int)(Mathf.Round(60 * UnityEngine.Random.value))).ToString() + "\nProficiency: " + (30 + (int)(Mathf.Round(60 * UnityEngine.Random.value))).ToString(); 
+                }
+
+                userInput.text += end;
+            }
+            else
+            {
+                if(checkDoneSpeaking && !textToSpeech.Speaking())
+                {
+                    checkDoneSpeaking = false;
+                    userInput.text = "Speak to enter text...";
+                    //recordIndicator.SetActive(true);
+                
+                    // This activates the User Mic to start speaking
+                    //activation.ToggleActivation();
+                    checkUserDoneSpeaking = true;
+                    if(first) 
+                    {
+                        first = false;
+                        Interviewer.SetTalking(true);
+                        checkDoneSpeaking = true;
+                    }
+                    else
+                    {
+                        Interviewer.SetTalking(false);
+                    }
+                }
+                if (DictationActivation.ReadyToSend())
+                {
+                    Interviewer.SetTalking(false);
+                    checkDoneSpeaking = true;
+                    DictationActivation.ResetReady(); 
+                    _userInput = userInput.text;
+                    m_MyEvent.Invoke();
+                    userInput.text = "Speak to enter text...";
+                    Interviewer.SetTalking(true);
+                }
             }
 
-            print(checkDoneSpeaking + " " + !textToSpeech.Speaking());
         }
         public void ResponseAfterUserInput()
         {
@@ -77,7 +131,6 @@ namespace OpenAI
             m_MyEvent.Invoke();
             userInput.text = "Enter text...";
         }
-
         
         private async void SendReply()
         {
@@ -96,7 +149,6 @@ namespace OpenAI
             };
 
             this._msg.Add(newMessage);
-            recordIndicator.GetComponent<Button>().onClick.Invoke();
             var completionResponse = await this._openAi.CreateChatCompletion(new CreateChatCompletionRequest()
             {
                 Model = "gpt-3.5-turbo",
@@ -113,6 +165,12 @@ namespace OpenAI
                 textBox.text = message.Content;
                 this._msg.Add(message);
                 textToSpeech.Speak();
+                checkDoneSpeaking = true;
+                Interviewer.SetTalking(false);
+                if (message.Content != null && message.Content.Contains("Have a") && message.Content.Contains("day"))
+                {
+                    stop = true;
+                }
             }
             else
             {

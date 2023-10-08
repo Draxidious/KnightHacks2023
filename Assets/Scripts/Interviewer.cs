@@ -39,6 +39,13 @@ public class Interviewer : MonoBehaviour
     public GameObject head_object;
     private Vector3 head_default_position;
 
+    private static Interviewer me;
+
+    Interviewer()
+    {
+        me = this;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -57,12 +64,15 @@ public class Interviewer : MonoBehaviour
         current_mouth = happy_mouth;
         mouth.GetComponent<UnityEngine.UI.Image>().sprite = happy_mouth;
         head_default_position = head_object.transform.position;
+
+        SetTalking(true);
+                UnityEngine.Debug.Log("aasdasdassd");
     }
 
     float eyetime = 0;
     float next_blink = 0;
     float talktime = 0;
-    float next_talk_switch = 0;
+    float next_talk_switch = 0.2f;
     int current_talk = 0;
     float movetime = 0;
 
@@ -75,15 +85,14 @@ public class Interviewer : MonoBehaviour
             eyetime -= next_blink;
             Blink();
         }
-
+        
+        talktime += Time.deltaTime;
         if (talking)
         {
-            talktime += Time.deltaTime;
             if (talktime >= next_talk_switch)
             {
                 talktime -= next_talk_switch;
                 next_talk_switch = UnityEngine.Random.value * 0.15f + 0.05f;
-                
                 if (++current_talk%2 == 0)
                     mouth.GetComponent<UnityEngine.UI.Image>().sprite = talk1_mouth;
                 else
@@ -130,33 +139,33 @@ public class Interviewer : MonoBehaviour
     private bool talking = false;
     private Sprite current_mouth;
 
-    private void SetTalking(bool am_i_gonna_talk_or_no)
+    public static void SetTalking(bool am_i_gonna_talk_or_no)
     {
-        if (talking != am_i_gonna_talk_or_no)
+        if (me.talking != am_i_gonna_talk_or_no)
         {
             if (am_i_gonna_talk_or_no)
             {
-                left_hand_target.transform.position += new Vector3(0, 0.15f, 0);
-                right_hand_target.transform.position += new Vector3(0, 0.15f, 0);
+                me.left_hand_target.transform.position += new Vector3(0, 0.15f, 0);
+                me.right_hand_target.transform.position += new Vector3(0, 0.15f, 0);
             }
             else
             {
-                left_hand_target.transform.position += new Vector3(0, -0.15f, 0);
-                right_hand_target.transform.position += new Vector3(0, -0.15f, 0);
+                me.left_hand_target.transform.position += new Vector3(0, -0.15f, 0);
+                me.right_hand_target.transform.position += new Vector3(0, -0.15f, 0);
             }
         }
+        
+        me.talking = am_i_gonna_talk_or_no;
 
-        talking = am_i_gonna_talk_or_no;
-
-        if (talking)
+        if (me.talking)
         {
-            eyes.GetComponent<UnityEngine.UI.Image>().sprite = talk1_mouth;
-            next_talk_switch = UnityEngine.Random.value * 0.2f + 0.1f;
+            me.mouth.GetComponent<UnityEngine.UI.Image>().sprite = me.talk1_mouth;
+            me.next_talk_switch = UnityEngine.Random.value * 0.2f + 0.1f;
             return;
         }
-
-        mouth.GetComponent<UnityEngine.UI.Image>().sprite = current_mouth;
-        next_blink = UnityEngine.Random.value * 7 + 0.5f;
+        
+        me.mouth.GetComponent<UnityEngine.UI.Image>().sprite = me.current_mouth;
+        me.next_blink = UnityEngine.Random.value * 7 + 0.5f;
     }
 
     public void SetMouth(int new_mouth)
