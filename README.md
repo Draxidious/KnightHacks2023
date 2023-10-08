@@ -59,4 +59,6 @@ Jack: I learned that Unity hates us [laughs] just generally about Unity itself a
 ![IMG_4391](https://github.com/Draxidious/KnightHacks2023/assets/86631042/0e2c2437-50e6-4da0-a6b4-5b0c0bf48a59)
 ![IMG_4390](https://github.com/Draxidious/KnightHacks2023/assets/86631042/1dcedaf5-861c-4c71-9c76-c2654748ba91)
 ![IMG_4396](https://github.com/Draxidious/KnightHacks2023/assets/86631042/ebb5e6af-fa1f-40c2-8300-9181fd75bc33)
+![IMG_1879](https://github.com/Draxidious/KnightHacks2023/assets/86631042/a6e2df27-14ad-43a6-8043-56410e3a7d44)
+![IMG_20231007_171908_01](https://github.com/Draxidious/KnightHacks2023/assets/86631042/d89a112c-6073-40da-9bf4-f00c105effe9)
 
