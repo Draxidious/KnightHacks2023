@@ -16,6 +16,8 @@ public class Interviewer : MonoBehaviour
     public GameObject body;
     public GameObject left_hand;
     public GameObject right_hand;
+    public GameObject left_hand_target;
+    public GameObject right_hand_target;
 
     public Material source_mat;
 
@@ -35,6 +37,9 @@ public class Interviewer : MonoBehaviour
     public Sprite angry_mouth;
     public Sprite default_mouth;
 
+    public GameObject head_object;
+    private Vector3 head_default_position;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -52,6 +57,7 @@ public class Interviewer : MonoBehaviour
         eyes.GetComponent<UnityEngine.UI.Image>().sprite = happy_eyes;
         current_mouth = happy_mouth;
         mouth.GetComponent<UnityEngine.UI.Image>().sprite = happy_mouth;
+        head_default_position = head_object.transform.position;
     }
 
     float eyetime = 0;
@@ -59,6 +65,7 @@ public class Interviewer : MonoBehaviour
     float talktime = 0;
     float next_talk_switch = 0;
     int current_talk = 0;
+    float movetime = 0;
 
     // Update is called once per frame
     void Update()
@@ -84,6 +91,9 @@ public class Interviewer : MonoBehaviour
                     mouth.GetComponent<UnityEngine.UI.Image>().sprite = talk2_mouth;
             }
         }
+
+        movetime += Time.deltaTime/2.5f;
+        head_object.transform.position = head_default_position + new Vector3(Mathf.PerlinNoise(20, movetime) - 0.5f, (Mathf.PerlinNoise(40, movetime) - 0.5f) * 0.4f, Mathf.PerlinNoise(60, movetime) - 0.5f) * 0.075f;
     }
 
     private bool blinking = false;
@@ -123,6 +133,20 @@ public class Interviewer : MonoBehaviour
 
     private void SetTalking(bool am_i_gonna_talk_or_no)
     {
+        if (talking != am_i_gonna_talk_or_no)
+        {
+            if (am_i_gonna_talk_or_no)
+            {
+                left_hand_target.transform.position += new Vector3(0, 0.15f, 0);
+                right_hand_target.transform.position += new Vector3(0, 0.15f, 0);
+            }
+            else
+            {
+                left_hand_target.transform.position += new Vector3(0, -0.15f, 0);
+                right_hand_target.transform.position += new Vector3(0, -0.15f, 0);
+            }
+        }
+
         talking = am_i_gonna_talk_or_no;
 
         if (talking)
