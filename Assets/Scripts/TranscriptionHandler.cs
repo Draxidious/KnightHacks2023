@@ -1,19 +1,24 @@
-using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Text;
-using Meta.WitAi.Events;
 using UnityEngine;
+using Meta.WitAi.Events;
+using System;
+using TMPro;
 
 namespace Meta.WitAi.Dictation
 {
-    public class MultiRequestTranscription : MonoBehaviour
+    public class TranscriptionHandler : MonoBehaviour
     {
         [SerializeField] private DictationService witDictation;
         [SerializeField] private int linesBetweenActivations = 2;
+         private TMP_Text textbox;
         [Multiline]
         [SerializeField] private string activationSeparator = String.Empty;
 
         [Header("Events")]
-        [SerializeField] private WitTranscriptionEvent onTranscriptionUpdated = new
+        [SerializeField]
+        private WitTranscriptionEvent onTranscriptionUpdated = new
             WitTranscriptionEvent();
 
         private StringBuilder _text;
@@ -26,6 +31,7 @@ namespace Meta.WitAi.Dictation
         {
             if (!witDictation) witDictation = FindObjectOfType<DictationService>();
 
+            textbox = this.GetComponent<TMP_Text>();
             _text = new StringBuilder();
             _separator = new StringBuilder();
             for (int i = 0; i < linesBetweenActivations; i++)
@@ -38,7 +44,7 @@ namespace Meta.WitAi.Dictation
                 _separator.Append(activationSeparator);
             }
         }
-
+       
         private void OnEnable()
         {
             witDictation.DictationEvents.OnFullTranscription.AddListener(OnFullTranscription);
@@ -57,6 +63,7 @@ namespace Meta.WitAi.Dictation
         private void OnCancelled()
         {
             _activeText = string.Empty;
+            textbox.text = _text.ToString();
             OnTranscriptionUpdated();
         }
 
@@ -70,6 +77,7 @@ namespace Meta.WitAi.Dictation
             }
 
             _text.Append(text);
+            textbox.text = _text.ToString();
             OnTranscriptionUpdated();
         }
 
@@ -82,6 +90,7 @@ namespace Meta.WitAi.Dictation
         public void Clear()
         {
             _text.Clear();
+            textbox.text = _text.ToString();
             onTranscriptionUpdated.Invoke(string.Empty);
         }
 

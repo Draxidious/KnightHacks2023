@@ -30,7 +30,7 @@ public class ActivateVoice : MonoBehaviour
     }
     public void Activate()
     {
-        _request = _voiceService.ActivateImmediately(GetRequestEvents());
+        _request = _voiceService.Activate(GetRequestEvents());
     }
 
     public void Deactivate()
@@ -54,6 +54,11 @@ public class ActivateVoice : MonoBehaviour
     private void OnComplete(VoiceServiceRequest request)
     {
         RefreshActive(false);
+    }
+
+    public void OnStoppedListeningDueToInactivity()
+    {
+        Activate();
     }
 
     // Refresh active text

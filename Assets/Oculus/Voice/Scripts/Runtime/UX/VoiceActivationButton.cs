@@ -54,6 +54,7 @@ namespace Oculus.VoiceSDK.UX
         private void Awake()
         {
             _buttonLabel = GetComponentInChildren<Text>();
+            _button = GetComponent<Button>();
             if (_voiceService == null)
             {
                 _voiceService = FindObjectOfType<VoiceService>();
@@ -63,15 +64,23 @@ namespace Oculus.VoiceSDK.UX
         private void OnEnable()
         {
             RefreshActive();
+            if (_button != null)
+            {
+                _button.onClick.AddListener(OnClick);
+            }
         }
         // Remove click delegate
         private void OnDisable()
         {
             _isActive = false;
+            if (_button != null)
+            {
+                _button.onClick.RemoveListener(OnClick);
+            }
         }
 
         // On click, activate if not active & deactivate if active
-        public void OnClick()
+        private void OnClick()
         {
             if (!_isActive)
             {
@@ -86,7 +95,6 @@ namespace Oculus.VoiceSDK.UX
         // Activate depending on settings
         private void Activate()
         {
-
             if (!_activateImmediately)
             {
                 _request = _voiceService.Activate(GetRequestEvents());
