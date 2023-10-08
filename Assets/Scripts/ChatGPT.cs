@@ -5,14 +5,23 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 using System.Threading.Tasks;
 using TMPro;
+using UnityEditor;
+using Meta.WitAi.Dictation;
+using Unity.VisualScripting;
+using UnityEngine.Serialization;
+
 
 namespace OpenAI
 {
     public class ChatGPT : MonoBehaviour
     {
         [SerializeField] public TMP_Text textBox;
+        [SerializeField] public TMP_Text userInput;
         [SerializeField] public TextToSpeech textToSpeech;
-        //[SerializeField] public GameObject recordIndicator;
+        [SerializeField] public GameObject recordIndicator;
+        [SerializeField] public GameObject activateDictateObject;
+        //[SerializeField] Meta.Voice.Samples.Dictation.DictationActivation activation;
+        //[SerializeField] Oculus.Voice.Dictation.AppDictationExperience experience;
 
         UnityEvent m_MyEvent = new UnityEvent();
 
@@ -31,26 +40,45 @@ namespace OpenAI
         
         private static string _userInput = "Hello";
 
-        private bool checkDoneSpeaking = false;
+        private static bool checkDoneSpeaking = false;
+        private bool checkUserDoneSpeaking = false;
 
         // Start is called before the first frame update
         void Start()
         {
+            //recordIndicator.GetComponent<Button>().onClick.Invoke();
+            recordIndicator.SetActive(true);
             m_MyEvent.AddListener(SendReply);
-            m_MyEvent.Invoke();              
+            m_MyEvent.Invoke();
         }
 
         void Update()
         {
+            // activation = activateDictateObject.GetComponent<Meta.Voice.Samples.Dictation.DictationActivation>();
+            // experience = activateDictateObject.GetComponent<Oculus.Voice.Dictation.AppDictationExperience>();
+            
             // If its checking to see if done speaking, then when its done speaking allow user to talk
             if(checkDoneSpeaking && !textToSpeech.Speaking())
             {
                 checkDoneSpeaking = false;
                 //recordIndicator.SetActive(true);
-
+                recordIndicator.GetComponent<Button>().onClick.Invoke();
+                // This activates the User Mic to start speaking
+                //activation.ToggleActivation();
+                checkUserDoneSpeaking = true;
             }
+
+            print(checkDoneSpeaking + " " + !textToSpeech.Speaking());
+        }
+        public void ResponseAfterUserInput()
+        {
+            print("WE GOT HERE");
+            _userInput = userInput.text;
+            m_MyEvent.Invoke();
+            userInput.text = "Enter text...";
         }
 
+        
         private async void SendReply()
         {
             var newMessage = new ChatMessage()
@@ -68,7 +96,7 @@ namespace OpenAI
             };
 
             this._msg.Add(newMessage);
-
+            recordIndicator.GetComponent<Button>().onClick.Invoke();
             var completionResponse = await this._openAi.CreateChatCompletion(new CreateChatCompletionRequest()
             {
                 Model = "gpt-3.5-turbo",
@@ -85,7 +113,6 @@ namespace OpenAI
                 textBox.text = message.Content;
                 this._msg.Add(message);
                 textToSpeech.Speak();
-                checkDoneSpeaking = true;
             }
             else
             {
@@ -100,6 +127,20 @@ namespace OpenAI
                {
                     textBox.text += "\n" + completionResponse.Warning;
                }
+            }
+
+            checkDoneSpeaking = true;
+        }
+
+        IEnumerable waitFunc()
+        {
+            const float temp = 20f;
+            float now = 0f;
+
+            while (now < temp)
+            {
+                now += Time.deltaTime;
+                yield return null;
             }
         }
 

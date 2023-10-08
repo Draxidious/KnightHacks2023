@@ -12,22 +12,14 @@ using UnityEngine.Serialization;
 
 namespace Meta.Voice.Samples.Dictation
 {
-    public class DictationActivation : MonoBehaviour
+    public class DictationActivationJack : MonoBehaviour
     {
         [FormerlySerializedAs("dictation")]
         [SerializeField] private DictationService _dictation;
-        private bool first = true;
-        //[SerializeField] private GameObject chatGPT;
 
         public void ToggleActivation()
         {
-            if (first)
-            {
-                first = false;
-                return;
-            }
-
-            if (_dictation.MicActive )
+            if (_dictation.MicActive)
             {
                 _dictation.Deactivate();
             }
