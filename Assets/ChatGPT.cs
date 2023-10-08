@@ -4,12 +4,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using System.Threading.Tasks;
+using TMPro;
 
 namespace OpenAI
 {
     public class ChatGPT : MonoBehaviour
     {
-        [SerializeField] public Text textBox;
+        [SerializeField] public TMP_Text textBox;
 
         UnityEvent m_MyEvent = new UnityEvent();
 
@@ -26,7 +27,7 @@ namespace OpenAI
         public static string professionalism;
         public static string proficiency;
         
-        private static string _userInput;
+        private static string _userInput = "pee pee poo poo brrrrrrrrrrrrrrrrrrrrrrrrrrrrr";
 
         // Start is called before the first frame update
         void Start()
@@ -37,6 +38,13 @@ namespace OpenAI
             textBox.text = "Added Event Listener";
 
             textBox.text = "Invoking Event Listener";
+            //m_MyEvent.Invoke();
+
+            //_userInput = "pee pee poo poo brrrrrrrrrrrrrrrrrrrrrrrrrrrrr";
+
+            //m_MyEvent.Invoke();
+
+            
             
         }
 
