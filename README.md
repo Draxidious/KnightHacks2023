@@ -50,9 +50,19 @@ Jordan: I learned that I never want to work with the OculusVoiceSDK again.
 
 Jack: I learned that Unity hates us [laughs] just generally about Unity itself and how annoying that some softwares are so deprecated that they're barely useful but still left in. I think it's pretty annoying.
 
-## What's next for InterView - AI Powered Interview Prep
+## Running OpenAI in Unity
+ - Make a class with a namespace of OpenAI named UtilityAI
+ - Create a static method named GetAIKey that takes no parameters
+ - Place the .cs file with the Asserts/Script folder
 
-[What's next is To Be Decided]
+## Major Highlights:
+
+ - 18 Collective hours of sleep
+ - 1500mg of caffeiene
+ - 1 Entire Frozen II movie watched
+ - Three Hours of Subway Surfers and Minecraft Parkour distractions
+
+## Our favorite photos from the event:
 
 ![IMG_4338](https://github.com/Draxidious/KnightHacks2023/assets/86631042/26ecc48a-5ff9-4e35-b1dc-849c873a735d)
 ![IMG_4372](https://github.com/Draxidious/KnightHacks2023/assets/86631042/ca66c12b-ee7c-448d-af24-927563a248f9)
